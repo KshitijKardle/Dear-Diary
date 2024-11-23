@@ -63,3 +63,46 @@ export async function POST(request) {
     )
   }
 }
+
+export async function DELETE(request) {
+  try {
+    // Get the ID from the URL
+    const url = new URL(request.url)
+    const id = parseInt(url.searchParams.get('id'))
+
+    if (!id) {
+      return NextResponse.json(
+        { 
+          message: "Post ID is required"
+        }, 
+        { status: 400 }
+      )
+    }
+
+    // Delete the blog post
+    const deletedPost = await prisma.blog.delete({
+      where: {
+        id: id
+      }
+    })
+
+    // Return success response
+    return NextResponse.json(
+      { 
+        message: "Post deleted successfully",
+        data: deletedPost 
+      }, 
+      { status: 200 }
+    )
+
+  } catch (error) {
+    // Handle any errors and return a 500 status code
+    return NextResponse.json(
+      { 
+        message: "Error deleting post",
+        error: error.message 
+      }, 
+      { status: 500 }
+    )
+  }
+}
