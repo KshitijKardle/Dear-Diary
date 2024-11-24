@@ -10,6 +10,7 @@ export default function CreatePost() {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
+    image: "",
   });
 
   const handleChange = (e, field) => {
@@ -26,7 +27,7 @@ export default function CreatePost() {
       router.push("/");
       router.refresh();
     } catch (error) {
-      console.error("Error creating post:", error);
+      console.error("Error  creating post:", error);
     }
   };
 
@@ -40,6 +41,11 @@ export default function CreatePost() {
             label="Title"
             value={formData.title}
             onChange={(e) => handleChange(e, "title")}
+          />
+          <Input
+            label="Title"
+            value={formData.image}
+            onChange={(e) => handleChange(e, "image")}
           />
           <Input
             label="Content"
