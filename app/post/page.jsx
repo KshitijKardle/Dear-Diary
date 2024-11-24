@@ -43,7 +43,7 @@ export default function CreatePost() {
             onChange={(e) => handleChange(e, "title")}
           />
           <Input
-            label="Title"
+            label="Image"
             value={formData.image}
             onChange={(e) => handleChange(e, "image")}
           />
