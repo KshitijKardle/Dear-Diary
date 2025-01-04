@@ -3,19 +3,47 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(request) {
   try {
-    // Fetch all blog posts
-    const posts = await prisma.blog.findMany({});
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
 
-    // Return the posts with a 200 status code
-    return NextResponse.json(
-      {
-        message: "Posts fetched successfully",
-        data: posts,
-      },
-      { status: 200 }
-    );
+    if (id) {
+      // Fetch the blog post by ID
+      const post = await prisma.blog.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!post) {
+        return NextResponse.json(
+          {
+            message: "Post not found",
+          },
+          { status: 404 }
+        );
+      }
+
+      // Return the post with a 200 status code
+      return NextResponse.json(
+        {
+          message: "Post fetched successfully",
+          data: post,
+        },
+        { status: 200 }
+      );
+    } else {
+      // Fetch all blog posts
+      const posts = await prisma.blog.findMany({});
+
+      // Return the posts with a 200 status code
+      return NextResponse.json(
+        {
+          message: "Posts fetched successfully",
+          data: posts,
+        },
+        { status: 200 }
+      );
+    }
   } catch (error) {
     // Handle any errors and return a 500 status code
     return NextResponse.json(
