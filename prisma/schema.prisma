@@ -16,6 +16,5 @@ datasource db {
 model blog {
   id      Int    @id @default(autoincrement())
   title   String
-  image   String
   content String
 }

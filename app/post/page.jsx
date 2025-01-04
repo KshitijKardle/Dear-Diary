@@ -10,7 +10,6 @@ export default function CreatePost() {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    image: "",
   });
 
   const handleChange = (e, field) => {
@@ -41,11 +40,6 @@ export default function CreatePost() {
             label="Title"
             value={formData.title}
             onChange={(e) => handleChange(e, "title")}
-          />
-          <Input
-            label="Image"
-            value={formData.image}
-            onChange={(e) => handleChange(e, "image")}
           />
           <Input
             label="Content"
