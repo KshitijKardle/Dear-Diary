@@ -23,16 +23,18 @@ const page = () => {
   return (
     <>
       <Navbar></Navbar>
-      <div className="display flex flex-wrap justify-between px-6 mt-4 ">
-        {posts.map((post, index) => (
-          <Card
-            key={post.id || index}
-            id={post.id}
-            title={post.title}
-            content={post.content}
-            date={new Date(post.date).toLocaleDateString("en-CA")}
-          />
-        ))}
+      <div className="min-h-screen bg-[linear-gradient(0deg,_#222_1px,_transparent_0px)] bg-[size:100%_2rem] p-6 md:p-12">
+        <div className="display flex flex-wrap justify-between px-6 mt-4">
+          {posts.map((post, index) => (
+            <Card
+              key={post.id || index}
+              id={post.id}
+              title={post.title}
+              content={post.content}
+              date={new Date(post.date).toLocaleDateString("en-CA")}
+            />
+          ))}
+        </div>
       </div>
     </>
   );

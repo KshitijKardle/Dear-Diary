@@ -4,7 +4,7 @@ import Link from "next/link";
 const Card = ({ id, title, content, date }) => {
   return (
     <Link href={`blogs/${id}`}>
-      <div className="bg-white rounded-lg shadow-md p-6  mb-4 h-40 w-72 hover:shadow-lg transition-shadow max-w-sm  ">
+      <div className="bg-white rounded-lg shadow-md p-6  mb-4 h-40 w-72 hover:bg-gray-300 transition duration-500 hover:scale-105  ">
         <small className="text-gray-600 overflow-hidden line-clamp-1 text-ellipsis ">
           {date}
         </small>
@@ -14,9 +14,6 @@ const Card = ({ id, title, content, date }) => {
 
         <p className="text-gray-600 overflow-hidden line-clamp-4 text-ellipsis">
           {content}
-        </p>
-        <p className="text-gray-600 overflow-hidden line-clamp-1 text-ellipsis">
-          {date}
         </p>
       </div>
     </Link>
