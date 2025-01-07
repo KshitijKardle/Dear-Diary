@@ -5,7 +5,7 @@ const Navbar = () => {
   return (
     <div className="flex justify-between items-center p-4 bg-zinc-50 text-black">
       <Link href="/" className="text-xl font-semibold">
-        Next Blog
+        Dear Diary
       </Link>
       <Link
         href="/post"

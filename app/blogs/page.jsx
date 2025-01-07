@@ -23,13 +23,14 @@ const page = () => {
   return (
     <>
       <Navbar></Navbar>
-      <div className="display flex flex-wrap justify-between px-6 mt-4">
+      <div className="display flex flex-wrap justify-between px-6 mt-4 ">
         {posts.map((post, index) => (
           <Card
             key={post.id || index}
             id={post.id}
             title={post.title}
             content={post.content}
+            date={new Date(post.date).toLocaleDateString("en-CA")}
           />
         ))}
       </div>

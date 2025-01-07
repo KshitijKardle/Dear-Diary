@@ -59,13 +59,16 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     // Get the request body
-    const { title, content } = await request.json();
+    const { title, content, date } = await request.json();
 
+    const formattedDate = new Date(date);
+    formattedDate.setUTCHours(0, 0, 0, 0);
     // Create a new blog post
     const post = await prisma.blog.create({
       data: {
         title,
         content,
+        date: formattedDate,
       },
     });
 
