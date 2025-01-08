@@ -1,29 +1,31 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 const prisma = new PrismaClient();
 
 export async function GET(request) {
   try {
+    const session = await getServerSession(authOptions);
+    console.log(session.user);
+
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
 
     if (id) {
-      // Fetch the blog post by ID
       const post = await prisma.blog.findUnique({
         where: { id: parseInt(id) },
+        include: { author: true }, // Include author details
       });
 
       if (!post) {
         return NextResponse.json(
-          {
-            message: "Post not found",
-          },
+          { message: "Post not found" },
           { status: 404 }
         );
       }
 
-      // Return the post with a 200 status code
       return NextResponse.json(
         {
           message: "Post fetched successfully",
@@ -32,10 +34,10 @@ export async function GET(request) {
         { status: 200 }
       );
     } else {
-      // Fetch all blog posts
-      const posts = await prisma.blog.findMany({});
+      const posts = await prisma.blog.findMany({
+        include: { author: true }, // Include author details
+      });
 
-      // Return the posts with a 200 status code
       return NextResponse.json(
         {
           message: "Posts fetched successfully",
@@ -45,7 +47,6 @@ export async function GET(request) {
       );
     }
   } catch (error) {
-    // Handle any errors and return a 500 status code
     return NextResponse.json(
       {
         message: "Error fetching posts",
@@ -58,21 +59,25 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    // Get the request body
-    const { title, content, date } = await request.json();
+    const session = await getServerSession(authOptions);
 
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const { title, content, date } = await request.json();
     const formattedDate = new Date(date);
     formattedDate.setUTCHours(0, 0, 0, 0);
-    // Create a new blog post
+
     const post = await prisma.blog.create({
       data: {
         title,
         content,
         date: formattedDate,
+        authorId: session.user.id, // Add the author ID from the session
       },
     });
 
-    // Return the post with a 201 status code
     return NextResponse.json(
       {
         message: "Post created successfully",
@@ -81,7 +86,6 @@ export async function POST(request) {
       { status: 201 }
     );
   } catch (error) {
-    // Handle any errors and return a 500 status code
     return NextResponse.json(
       {
         message: "Error creating post",
@@ -94,27 +98,38 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   try {
-    // Get the ID from the URL
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     const url = new URL(request.url);
     const id = parseInt(url.searchParams.get("id"));
 
     if (!id) {
       return NextResponse.json(
-        {
-          message: "Post ID is required",
-        },
+        { message: "Post ID is required" },
         { status: 400 }
       );
     }
 
-    // Delete the blog post
-    const deletedPost = await prisma.blog.delete({
-      where: {
-        id: id,
-      },
+    // Verify post ownership
+    const post = await prisma.blog.findUnique({
+      where: { id },
     });
 
-    // Return success response
+    if (!post || post.authorId !== session.user.id) {
+      return NextResponse.json(
+        { message: "Unauthorized or post not found" },
+        { status: 403 }
+      );
+    }
+
+    const deletedPost = await prisma.blog.delete({
+      where: { id },
+    });
+
     return NextResponse.json(
       {
         message: "Post deleted successfully",
@@ -123,7 +138,6 @@ export async function DELETE(request) {
       { status: 200 }
     );
   } catch (error) {
-    // Handle any errors and return a 500 status code
     return NextResponse.json(
       {
         message: "Error deleting post",

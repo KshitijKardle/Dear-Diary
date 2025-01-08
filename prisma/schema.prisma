@@ -13,9 +13,18 @@ datasource db {
   url      = "postgresql://postgres:kshitij77@localhost:5432/blog"
 }
 
-model blog {
-  id      Int       @id @default(autoincrement())
-  title   String    @default("No Title")    
-  content String    @default("No Content")
-  date    DateTime  @default(now())
+model User {
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  password String   // Will store hashed password, never plaintext
+  blogs    Blog[]   // One-to-many relationship with Blog
+}
+
+model Blog {
+  id        Int      @id @default(autoincrement())
+  title     String   @default("No Title")    
+  content   String   @default("No Content")
+  date      DateTime @default(now())
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
 }

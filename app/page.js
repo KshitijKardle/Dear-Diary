@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Navbar from "./components/Navbar";
+import Header from "./components/Header";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-8 transform rotate-1 notebook-page">
