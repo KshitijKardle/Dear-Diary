@@ -7,16 +7,24 @@ const prisma = new PrismaClient();
 
 export async function GET(request) {
   try {
+    // Get the current session
     const session = await getServerSession(authOptions);
-    console.log(session.user);
+
+    // Check if user is authenticated
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
 
     if (id) {
+      // Fetch specific blog post, ensuring it belongs to the current user
       const post = await prisma.blog.findUnique({
-        where: { id: parseInt(id) },
-        include: { author: true }, // Include author details
+        where: {
+          id: parseInt(id),
+          authorId: session.user.id, // Only fetch if it belongs to current user
+        },
       });
 
       if (!post) {
@@ -34,8 +42,14 @@ export async function GET(request) {
         { status: 200 }
       );
     } else {
+      // Fetch all blog posts for the current user
       const posts = await prisma.blog.findMany({
-        include: { author: true }, // Include author details
+        where: {
+          authorId: session.user.id,
+        },
+        orderBy: {
+          date: "desc", // Most recent posts first
+        },
       });
 
       return NextResponse.json(
@@ -47,6 +61,7 @@ export async function GET(request) {
       );
     }
   } catch (error) {
+    console.error("Error in GET request:", error);
     return NextResponse.json(
       {
         message: "Error fetching posts",
@@ -66,6 +81,7 @@ export async function POST(request) {
     }
 
     const { title, content, date } = await request.json();
+
     const formattedDate = new Date(date);
     formattedDate.setUTCHours(0, 0, 0, 0);
 
@@ -74,7 +90,7 @@ export async function POST(request) {
         title,
         content,
         date: formattedDate,
-        authorId: session.user.id, // Add the author ID from the session
+        authorId: session.user.id,
       },
     });
 
@@ -114,14 +130,14 @@ export async function DELETE(request) {
       );
     }
 
-    // Verify post ownership
+    // Verify post ownership before deletion
     const post = await prisma.blog.findUnique({
       where: { id },
     });
 
     if (!post || post.authorId !== session.user.id) {
       return NextResponse.json(
-        { message: "Unauthorized or post not found" },
+        { message: "Post not found or unauthorized" },
         { status: 403 }
       );
     }

@@ -22,7 +22,7 @@ export async function middleware(request) {
 
   // Redirect to dashboard if user is already logged in and trying to access login/register
   if (token && isPublicPath) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();

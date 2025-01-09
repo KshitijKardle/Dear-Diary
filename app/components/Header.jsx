@@ -16,6 +16,7 @@ const Header = () => {
           </a>
           <a href="/register">register</a>
           <SignOutButton></SignOutButton>
+          <a href="/login">login</a>
         </nav>
       </div>
     </header>
