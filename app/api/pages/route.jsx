@@ -12,6 +12,8 @@ export async function GET(request) {
 
     // Check if user is authenticated
     if (!session) {
+      //redirect to login page
+      //return NextResponse.redirect("/login");
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
