@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 
 const page = () => {
   const [posts, setPosts] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPosts = async () => {

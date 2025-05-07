@@ -11,6 +11,7 @@ export default function CreatePost() {
     content: "",
     date: "", // Added date field
   });
+  const [error, setError] = useState(null);
 
   const handleChange = (e, field) => {
     setFormData({

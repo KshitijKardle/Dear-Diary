@@ -13,7 +13,7 @@ export async function GET(request) {
     // Check if user is authenticated
     if (!session) {
       //redirect to login page
-      //return NextResponse.redirect("/login");
+
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
@@ -80,29 +80,29 @@ export async function POST(request) {
 
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    } else {
+      const { title, content, date } = await request.json();
+
+      const formattedDate = new Date(date);
+      formattedDate.setUTCHours(0, 0, 0, 0);
+
+      const post = await prisma.blog.create({
+        data: {
+          title,
+          content,
+          date: formattedDate,
+          authorId: session.user.id,
+        },
+      });
+
+      return NextResponse.json(
+        {
+          message: "Post created successfully",
+          data: post,
+        },
+        { status: 201 }
+      );
     }
-
-    const { title, content, date } = await request.json();
-
-    const formattedDate = new Date(date);
-    formattedDate.setUTCHours(0, 0, 0, 0);
-
-    const post = await prisma.blog.create({
-      data: {
-        title,
-        content,
-        date: formattedDate,
-        authorId: session.user.id,
-      },
-    });
-
-    return NextResponse.json(
-      {
-        message: "Post created successfully",
-        data: post,
-      },
-      { status: 201 }
-    );
   } catch (error) {
     return NextResponse.json(
       {
